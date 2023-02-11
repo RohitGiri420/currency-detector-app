@@ -53,7 +53,6 @@ import android.widget.Toast;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.tensorflow.lite.examples.classification.env.ImageUtils;
 import org.tensorflow.lite.examples.classification.env.Logger;
@@ -106,7 +105,7 @@ public abstract class CameraActivity extends AppCompatActivity
   private Model model = Model.FLOAT;
   private Device device = Device.CPU;
   private int numThreads = -1;
-   MediaPlayer mp,mp1,mp2;
+   MediaPlayer mp,mp1,mp2,mp3;
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
     LOGGER.d("onCreate " + this);
@@ -343,9 +342,10 @@ public abstract class CameraActivity extends AppCompatActivity
     handlerThread.start();
     handler = new Handler(handlerThread.getLooper());
 
-    mp = MediaPlayer.create(this, R.raw.hun);
-    mp1 = MediaPlayer.create(this, R.raw.ten);
-    mp2 = MediaPlayer.create(this, R.raw.five);
+    mp = MediaPlayer.create(this, R.raw.ten);
+    mp1 = MediaPlayer.create(this, R.raw.twenty);
+    mp2 = MediaPlayer.create(this, R.raw.fifty);
+    mp3 = MediaPlayer.create(this,R.raw.hun);
 
  /*   mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
       @Override
@@ -550,9 +550,11 @@ public abstract class CameraActivity extends AppCompatActivity
         return 0;
     }
   }
-boolean hun = false;
-  boolean five = false;
   boolean ten = false;
+  boolean twenty = false;
+  boolean fifty = false;
+  boolean twoHun = false;
+  boolean bg = false;
   @UiThread
   protected void showResultsInBottomSheet(List<Recognition> results) {
 
@@ -565,21 +567,44 @@ boolean hun = false;
                   String.format("%.2f", (100 * recognition.getConfidence())) + "%");
         float confi = 100 * recognition.getConfidence();
         try {
-          if (!five && recognitionTextView.getText().toString().equalsIgnoreCase("500") && confi>99 ) {
-            mp2.start();
-            five =true;
-            ten = false;
-            hun = false;
-          } else if (!hun&& recognitionTextView.getText().toString().equalsIgnoreCase("100")&& confi>99) {
+          if (!ten && recognitionTextView.getText().toString().equalsIgnoreCase("10") && confi>99 ) {
             mp.start();
-            hun = true;
-            five =false;
-            ten = false;
-          } else if (!ten&&recognitionTextView.getText().toString().equalsIgnoreCase("10")&& confi>90 ) {
+            ten =true;
+            twenty = false;
+            fifty = false;
+            twoHun = false;
+            bg = false;
+
+          } else if (!twenty&& recognitionTextView.getText().toString().equalsIgnoreCase("20")&& confi>99) {
             mp1.start();
-            ten  =true;
-            five =false;
-            hun = false;
+            ten =false;
+            twenty = true;
+            fifty = false;
+            twoHun = false;
+            bg = false;
+
+          } else if (!fifty&&recognitionTextView.getText().toString().equalsIgnoreCase("50")&& confi>99 ) {
+            mp2.start();
+            ten =false;
+            twenty = false;
+            fifty = true;
+            twoHun = false;
+            bg = false;
+
+          } else if (!twoHun&&recognitionTextView.getText().toString().equalsIgnoreCase("200")&& confi>99 ) {
+            mp3.start();
+            ten =false;
+            twenty = false;
+            fifty = false;
+            twoHun = true;
+            bg = false;
+
+          } else if (!bg&&recognitionTextView.getText().toString().equalsIgnoreCase("bg")&& confi>99 ) {
+            ten =false;
+            twenty = false;
+            fifty = false;
+            twoHun = false;
+            bg = true;
           }
         }catch (Exception e){
           e.printStackTrace();
